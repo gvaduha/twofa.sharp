@@ -15,8 +15,12 @@ namespace gvaduha.twofa
     {
         [Description("N")]
         NotConfigured,
+        [Description("W")]
+        WaitingForConfirmation,
         [Description("E")]
-        Enabled
+        Enabled,
+        [Description("D")]
+        Disabled,
     }
 
     /// <summary>
@@ -173,8 +177,8 @@ namespace gvaduha.twofa
             if (string.IsNullOrWhiteSpace(code))
                 throw new InvalidEnumArgumentException(nameof(code));
 
-            var secraw = Encoding.ASCII.GetBytes(secret);
-            var totp = new Totp(secraw, _config.CodeStep, OtpHashMode.Sha1, _config.CodeSize, TimeCorrection.UncorrectedInstance);
+            var rawSecret = Encoding.ASCII.GetBytes(secret);
+            var totp = new Totp(rawSecret, _config.CodeStep, OtpHashMode.Sha1, _config.CodeSize, TimeCorrection.UncorrectedInstance);
             var window = new VerificationWindow(_config.CodeWindow, _config.CodeWindow);
             var res = totp.VerifyTotp(code, out _, window);
             return res;

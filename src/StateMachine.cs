@@ -27,32 +27,27 @@ namespace gvaduha.twofa
     class Context
     {
         //TODO: plumb
-        public TotpAuthenticationFactor AuthenticationFactor { get; } = new TotpAuthenticationFactor(TotpAuthenticationFactorConfig.Default);
+        public TotpAuthenticationFactorConfig TotpConfig { get; } = TotpAuthenticationFactorConfig.Default;
+
+        public TotpAuthenticationFactor AuthenticationFactor { get; } =
+            new TotpAuthenticationFactor(TotpAuthenticationFactorConfig.Default);
+
         public IAccountScaDetails AccountScaDetails { get; } = new AccountScaDetails();
         public SharedSecretExchangeConfig SharedSecretExchangeConfig { get; } = SharedSecretExchangeConfig.Default;
         public ISharedSecretKeyDelivery SharedSecretKeyDelivery { get; } = new EmailGateWay();
         public IAccountDeliveryDetails AccountDeliveryDetails { get; } = new ApplicationUser();
+        public IGraphicCodeGenerator GraphicCodeGenerator =>
+            new QrCodeGenerator(new QrCodeGenerator.Config(TotpConfig.CodeSize, TotpConfig.CodeStep, "gv@local"));
+
+        public string StateExecutionResult { get; set; } // consider Dictionary
+
     }
 
     class StateNotConfigured : IState
     {
         public void Enter(Context ctx)
         {
-            string msg =
-                "ENTER???";
-            Debug.Print(msg);
-        }
-    }
-
-    class StateConfigurationNotValidated : IState
-    {
-        public void Enter(Context ctx)
-        {
-            string msg =
-                "QR = create (encSS)" +
-                "present QR" +
-                "save StateNotValidated";
-            Debug.Print(msg);
+            Debug.Print($"Entered [{nameof(StateNotConfigured)}]");
 
             // generate and save share secret
             var ss = ctx.AuthenticationFactor.GenerateSharedSecret();
@@ -65,6 +60,22 @@ namespace gvaduha.twofa
             ctx.SharedSecretKeyDelivery.SendSharedSecretKey(ctx.AccountDeliveryDetails, key);
 
             // create QR
+            var visualCode = ctx.GraphicCodeGenerator.GenerateEncrypted(ssEncrypted, iv, ctx.AccountDeliveryDetails.Identity);
+
+            ctx.StateExecutionResult = visualCode;
+
+            // change state
+            ctx.AccountScaDetails.Status = ScaFactorStatus.WaitingForConfirmation;
+        }
+    }
+
+    class StateWaitingForConfirmation : IState
+    {
+        public void Enter(Context ctx)
+        {
+            Debug.Print($"Entered [{nameof(StateWaitingForConfirmation)}]");
+            //TODO: Plumb
+            ctx.StateExecutionResult = "<form><span>Verification code</span><input type='text'></form>";
         }
     }
 
@@ -72,26 +83,9 @@ namespace gvaduha.twofa
     {
         public void Enter(Context ctx)
         {
-            string msg =
-                "" +
-                "";
-            Debug.Print(msg);
+            Debug.Print($"Entered [{nameof(StateWaitingForConfirmation)}]");
         }
     }
-
-    class TestState<T> : IState
-    {
-        private T s;
-        public TestState(T s)
-        {
-            this.s = s;
-        }
-        public void Enter(Context ctx)
-        {
-            Debug.Print("StateNotConfigured entered " + s.ToString());
-        }
-    }
-
 
     class StateMachine
     {
@@ -124,36 +118,6 @@ namespace gvaduha.twofa
             _curState.Enter(ctx);
 
             return this;
-        }
-    }
-
-
-
-    /****************************************************************************************************************************/
-
-    class Txxx
-    {
-        public static void x()
-        {
-            IState st = new TestState<string>("start");
-            IState sc = new TestState<string>("completed");
-            IState sd = new TestState<string>("DANCING");
-
-            var sm = new StateMachine(st)
-                .AddTransition(new Transition("dance", st, sd))
-                .AddTransition(new Transition("dance", sd, sd))
-                .AddTransition(new Transition("finish", sd, sc))
-                .AddTransition(new Transition("restart", sc, st));
-
-            Context ctx = null;
-
-            sm.Perform("dance", ctx)
-                .Perform("dance", ctx)
-                .Perform("finish", ctx)
-                .Perform("restart", ctx)
-                .Perform("dance", ctx)
-                .Perform("dance", ctx)
-                .Perform("restart", ctx);
         }
     }
 }

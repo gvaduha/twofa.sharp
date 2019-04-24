@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using gvaduha.twofa;
 using Microsoft.FSharp.Core;
+using gvaduha.twofa;
 
 namespace gvaduha.tests.twofa
 {
@@ -11,13 +12,53 @@ namespace gvaduha.tests.twofa
             => FSharpFunc<T1, TResult>.FromConverter(val => func(val));
     }
 
+
+    class TestState<T> : IState
+    {
+        private T s;
+        public TestState(T s)
+        {
+            this.s = s;
+        }
+        public void Enter(Context ctx)
+        {
+            Debug.Print("StateNotConfigured entered " + s.ToString());
+        }
+    }
+
+    class TestSimpleStateMachine
+    {
+        public static void x()
+        {
+            IState st = new TestState<string>("start");
+            IState sc = new TestState<string>("completed");
+            IState sd = new TestState<string>("DANCING");
+
+            var sm = new StateMachine(st)
+                .AddTransition(new Transition("dance", st, sd))
+                .AddTransition(new Transition("dance", sd, sd))
+                .AddTransition(new Transition("finish", sd, sc))
+                .AddTransition(new Transition("restart", sc, st));
+
+            Context ctx = null;
+
+            sm.Perform("dance", ctx)
+                .Perform("dance", ctx)
+                .Perform("finish", ctx)
+                .Perform("restart", ctx)
+                .Perform("dance", ctx)
+                .Perform("dance", ctx);
+                //.Perform("restart", ctx);
+        }
+    }
+
     [TestClass]
     public class TwoFactorAuthTest
     {
         [TestMethod]
         public void Test()
         {
-            Txxx.x();
+            TestSimpleStateMachine.x();
         }
     }
 
