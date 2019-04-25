@@ -42,7 +42,7 @@ namespace gvaduha.twofa
         public string StateExecutionResult { get; set; } // consider Dictionary
 
     }
-
+    
     class StateNotConfigured : IState
     {
         public void Enter(Context ctx)
@@ -83,7 +83,7 @@ namespace gvaduha.twofa
     {
         public void Enter(Context ctx)
         {
-            Debug.Print($"Entered [{nameof(StateWaitingForConfirmation)}]");
+            Debug.Print($"Entered [{nameof(StateEnabled)}]");
         }
     }
 

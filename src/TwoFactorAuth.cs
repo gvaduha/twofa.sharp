@@ -11,7 +11,7 @@ namespace gvaduha.twofa
     /// <summary>
     /// Application user's status of SCA configuration
     /// </summary>
-    enum ScaFactorStatus
+    public enum ScaFactorStatus
     {
         [Description("N")]
         NotConfigured,
@@ -24,30 +24,9 @@ namespace gvaduha.twofa
     }
 
     /// <summary>
-    /// Details of SCA for user account
-    /// </summary>
-    interface IAccountScaDetails
-    {
-        /// <summary>
-        /// Status of SCA
-        /// </summary>
-        ScaFactorStatus Status { get; set; }
-
-        /// <summary>
-        /// Shared secret using for TOTP
-        /// </summary>
-        string SharedSecret { get; set; }
-
-        /// <summary>
-        /// Current counter of attempts to process SCA
-        /// </summary>
-        byte FaultAttempts { get; set; }
-    }
-
-    /// <summary>
     /// Application user's settings for SCA
     /// </summary>
-    struct AccountScaDetails : IAccountScaDetails
+    public struct AccountScaDetails : IAccountScaDetails
     {
         /// <summary>
         /// Constructor

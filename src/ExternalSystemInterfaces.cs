@@ -5,16 +5,6 @@ using QRCoder;
 
 namespace gvaduha.twofa
 {
-    /// <summary>
-    /// Details (e-mail, post address, etc) for information delivery
-    /// </summary>
-    interface IAccountDeliveryDetails
-    {
-        /// <summary>
-        /// Uniq user identity
-        /// </summary>
-        string Identity { get; }
-    }
 
     /// <summary>
     /// Decouples method of delivery symmetric key to decode shared secret
@@ -109,5 +99,6 @@ namespace gvaduha.twofa
 
     class ApplicationUser : IAccountDeliveryDetails
     {
+        public string Identity { get; }
     }
 }

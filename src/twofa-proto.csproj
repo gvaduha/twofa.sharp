@@ -6,8 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{368DE88F-A14B-4E74-AFE1-3F01EBCDAB34}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>twofa-proto</RootNamespace>
+    <OutputType>Library</OutputType>
+    <RootNamespace>gvaduha.twofa</RootNamespace>
     <AssemblyName>twofa-proto</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -33,6 +33,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FsCheck, Version=2.14.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -130,7 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExternalSystemInterfaces.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Facade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateMachine.cs" />
     <Compile Include="TwoFactorAuth.cs" />
