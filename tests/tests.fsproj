@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\twofa-proto.csproj" />
+    <ProjectReference Include="..\src\twofa.csproj" />
   </ItemGroup>
 
   <ItemGroup>
