@@ -15,8 +15,6 @@ namespace gvaduha.twofa
     {
         [Description("N")]
         NotConfigured,
-        [Description("W")]
-        WaitingForConfirmation,
         [Description("E")]
         Enabled,
         [Description("D")]
@@ -34,7 +32,7 @@ namespace gvaduha.twofa
         /// <param name="status">Status of SCA</param>
         /// <param name="secret">Shared secret</param>
         /// <param name="faultAttempts">Current counter of attempts to process SCA</param>
-        AccountScaDetails(ScaFactorStatus status, string secret, byte faultAttempts)
+        public AccountScaDetails(ScaFactorStatus status, string secret, byte faultAttempts)
         {
             Status = status;
             FaultAttempts = faultAttempts;
@@ -239,7 +237,7 @@ namespace gvaduha.twofa
             if (string.IsNullOrEmpty(cipherText) || string.IsNullOrEmpty(iv) || string.IsNullOrEmpty(key))
                 throw new ArgumentNullException("string arguments should'n be null or empty");
 
-            string plaintext = null;
+            string plaintext;
 
             using (var crypto = new AesManaged())
             {

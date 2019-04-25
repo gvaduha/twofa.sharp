@@ -22,13 +22,13 @@ namespace gvaduha.twofa
     public interface IGraphicCodeGenerator
     {
         /// <summary>
-        /// Generates visual representation of symmetrically encrypted shared secred as HTML section
+        /// Generates visual representation of symmetrically encrypted shared secret as HTML section
         /// </summary>
-        /// <param name="sharedSecred">encrypted shared secret</param>
+        /// <param name="sharedSecret">encrypted shared secret</param>
         /// <param name="iv">initialization vector</param>
         /// <param name="identity">user identity for TOTP</param>
         /// <returns></returns>
-        string GenerateEncrypted(string sharedSecred, string iv, string identity);
+        string GenerateEncrypted(string sharedSecret, string iv, string identity);
     }
 
     /// <summary>
@@ -60,21 +60,23 @@ namespace gvaduha.twofa
         }
 
         /// <summary>
-        /// Generates QR for shared secred and includes iv and identity
+        /// Generates QR for shared secret and includes iv and identity
         /// </summary>
-        /// <param name="sharedSecred">QR payload</param>
-        /// <param name="iv">extened property iv used to transfer initialization vector</param>
+        /// <param name="sharedSecret">QR payload</param>
+        /// <param name="iv">extended property iv used to transfer initialization vector</param>
         /// <param name="identity">user's identity can be used to support several accounts in one app scope</param>
         /// <returns></returns>
-        public string GenerateEncrypted(string sharedSecred, string iv, string identity)
+        public string GenerateEncrypted(string sharedSecret, string iv, string identity)
         {
-            var otppl = new PayloadGenerator.OneTimePassword();
-            otppl.Secret = sharedSecred;
-            otppl.Issuer = _config.Issuer;
-            otppl.Label = identity;
-            otppl.Digits = _config.CodeSize;
-            otppl.Period = _config.CodeStep;
-            var sb = new StringBuilder(otppl.ToString());
+            var payload = new PayloadGenerator.OneTimePassword
+            {
+                Secret = sharedSecret,
+                Issuer = _config.Issuer,
+                Label = identity,
+                Digits = _config.CodeSize,
+                Period = _config.CodeStep
+            };
+            var sb = new StringBuilder(payload.ToString());
             sb.Append("&extver=1").Append("&iv=").Append(iv);
 
             using (var qrGenerator = new QRCodeGenerator())

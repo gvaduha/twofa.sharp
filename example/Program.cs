@@ -18,19 +18,28 @@ namespace example
         public ScaFactorStatus Status { get; set; }
         public string SharedSecret { get; set; }
         public byte FaultAttempts { get; set; }
-        public string Identity { get; }
+        public string Identity { get; set; }
     }
 
-    class Program
+    class Example
     {
-        static void Main(string[] args)
+        private readonly SecondFactorGateway _sfgw;
+        private LoginUser _user;
+
+        public Example()
         {
             var config = new SecondFactorGateway.Config(TotpAuthenticationFactorConfig.Default, SharedSecretExchangeConfig.Default);
-            var sfgw = new SecondFactorGateway(config,
+            _sfgw = new SecondFactorGateway(config,
                 new QrCodeGenerator(new QrCodeGenerator.Config(TotpAuthenticationFactorConfig.Default.CodeSize, TotpAuthenticationFactorConfig.Default.CodeStep, "gv@local")),
                 new DeliveryGateWay()
-                );
-            var result = sfgw.Login(new LoginUser());
+            );
+            _user = new LoginUser()
+                {FaultAttempts = 0, SharedSecret = "", Status = ScaFactorStatus.NotConfigured, Identity = "testuser"};
+        }
+
+        public void xab()
+        {
+            var result = _sfgw.Login(new LoginUser());
 
             switch (result)
             {
@@ -43,6 +52,14 @@ namespace example
                 default:
                     throw new InvalidOperationException($"Result type [{result.GetType()}] is unknown");
             }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var e = new Example();
         }
     }
 }
