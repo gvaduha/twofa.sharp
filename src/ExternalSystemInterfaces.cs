@@ -1,28 +1,25 @@
-﻿
-using System.Drawing;
-using System.Text;
+﻿using System.Text;
 using QRCoder;
 
 namespace gvaduha.twofa
 {
-
     /// <summary>
     /// Decouples method of delivery symmetric key to decode shared secret
     /// </summary>
-    interface ISharedSecretKeyDelivery
+    public interface ISharedSecretKeyDeliveryGateway
     {
         /// <summary>
         /// Deliver the symmetric key used to encode shared secret to the user
         /// </summary>
         /// <param name="deliveryDetails">account delivery details</param>
-        /// <param name="sharedSecret"></param>
-        void SendSharedSecretKey(IAccountDeliveryDetails deliveryDetails, string sharedSecret);
+        /// <param name="key">symmetric key to decrypt shared secret</param>
+        void SendSharedSecretKey(IAccountDeliveryDetails deliveryDetails, string key);
     }
 
     /// <summary>
     /// Shared secret code visualization
     /// </summary>
-    interface IGraphicCodeGenerator
+    public interface IGraphicCodeGenerator
     {
         /// <summary>
         /// Generates visual representation of symmetrically encrypted shared secred as HTML section
@@ -34,18 +31,17 @@ namespace gvaduha.twofa
         string GenerateEncrypted(string sharedSecred, string iv, string identity);
     }
 
-
     /// <summary>
-    /// QR code generator
+    /// Default implementation of QR code generator
     /// </summary>
-    class QrCodeGenerator : IGraphicCodeGenerator
+    public class QrCodeGenerator : IGraphicCodeGenerator
     {
         public struct Config
         {
-            public byte PixelSize;
-            public byte CodeSize;
-            public byte CodeStep;
-            public string Issuer;
+            public byte PixelSize { get; }
+            public byte CodeSize { get; }
+            public byte CodeStep { get; }
+            public string Issuer { get; }
 
             public Config(byte codeSize, byte codeStep, string issuer, byte pixelSize = 3)
             {
@@ -63,6 +59,13 @@ namespace gvaduha.twofa
             _config = config;
         }
 
+        /// <summary>
+        /// Generates QR for shared secred and includes iv and identity
+        /// </summary>
+        /// <param name="sharedSecred">QR payload</param>
+        /// <param name="iv">extened property iv used to transfer initialization vector</param>
+        /// <param name="identity">user's identity can be used to support several accounts in one app scope</param>
+        /// <returns></returns>
         public string GenerateEncrypted(string sharedSecred, string iv, string identity)
         {
             var otppl = new PayloadGenerator.OneTimePassword();
@@ -85,20 +88,5 @@ namespace gvaduha.twofa
                 }
             }
         }
-    }
-
-    /********************************************************/
-    // PURE MOCKS
-    /********************************************************/
-    //TODO: Connect to real systems
-    class EmailGateWay : ISharedSecretKeyDelivery
-    {
-        public void SendSharedSecretKey(IAccountDeliveryDetails deliveryDetails, string sharedSecret)
-        {}
-    }
-
-    class ApplicationUser : IAccountDeliveryDetails
-    {
-        public string Identity { get; }
     }
 }

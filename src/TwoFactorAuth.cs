@@ -57,52 +57,6 @@ namespace gvaduha.twofa
     }
 
     /// <summary>
-    /// TOTP algorithm settings
-    /// </summary>
-    struct TotpAuthenticationFactorConfig
-    {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="codeSize">Truncate auth code to this value</param>
-        /// <param name="codeStep">Auth code valid time frame in seconds</param>
-        /// <param name="codeWindow">Auth code frame of tolerance codeWindow (-n..code..+n)</param>
-        /// <param name="secretSize">Size of shared secret in symbols</param>
-        public TotpAuthenticationFactorConfig(byte codeSize, byte codeStep, byte codeWindow, uint secretSize)
-        {
-            CodeSize = codeSize;
-            CodeStep = codeStep;
-            CodeWindow = codeWindow;
-            SecretSize = secretSize;
-        }
-
-        /// <summary>
-        /// Truncate auth code to this value
-        /// </summary>
-        public readonly byte CodeSize;
-
-        /// <summary>
-        /// Auth code valid time frame in seconds
-        /// </summary>
-        public readonly byte CodeStep;
-
-        /// <summary>
-        /// Auth code frame of tolerance codeWindow (-n..code..+n)
-        /// </summary>
-        public readonly byte CodeWindow;
-
-        /// <summary>
-        /// Size of shared secret in symbols
-        /// </summary>
-        public readonly uint SecretSize;
-
-        /// <summary>
-        /// Default configuration
-        /// </summary>
-        public static TotpAuthenticationFactorConfig Default { get; } = new TotpAuthenticationFactorConfig(6,30,5,32);
-    }
-
-    /// <summary>
     /// TOTP algorithm
     /// </summary>
     sealed class TotpAuthenticationFactor : IDisposable
@@ -320,19 +274,5 @@ namespace gvaduha.twofa
 
             return plaintext;
         }
-    }
-
-    class SharedSecretExchangeConfig
-    {
-        public SharedSecretExchangeConfig(uint symmetricKeySize, uint symmetricExtendedKeySize)
-        {
-            SymmetricKeySize = symmetricKeySize;
-            SymmetricExtendedKeySize = symmetricExtendedKeySize;
-        }
-
-        public readonly uint SymmetricKeySize;
-        public readonly uint SymmetricExtendedKeySize;
-
-        public static SharedSecretExchangeConfig Default { get; } = new SharedSecretExchangeConfig(80, 128);
     }
 }
