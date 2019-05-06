@@ -174,7 +174,7 @@ namespace gvaduha.twofa
     /// <summary>
     /// Extensions for simple symmetric string encryption
     /// </summary>
-    static class StringSymCryptoExtensions
+    public static class StringSymCryptoExtensions
     {
         /// <summary>
         /// Symmetrically encrypts 

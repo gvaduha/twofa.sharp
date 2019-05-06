@@ -76,8 +76,10 @@ namespace gvaduha.twofa
                 Digits = _config.CodeSize,
                 Period = _config.CodeStep
             };
+
             var sb = new StringBuilder(payload.ToString());
             sb.Append("&extver=1").Append("&iv=").Append(iv);
+            System.Diagnostics.Debug.Print($"SS part in QR: {sb.ToString()}\n");
 
             using (var qrGenerator = new QRCodeGenerator())
             {

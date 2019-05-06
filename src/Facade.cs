@@ -239,12 +239,14 @@ namespace gvaduha.twofa
             // generate and save share secret
             var ss = new TotpAuthenticationFactor(_config.Totp).GenerateSharedSecret();
             user.SharedSecret = ss;
+            System.Diagnostics.Debug.Print($"SS on server side: {ss}\n");
             // change state
             user.Status = ScaFactorStatus.Enabled;
 
             // encrypt shared secret with symmetric key
             var (ssEncrypted, iv, key) = ss.SymmetricCrypt((int) _config.Crypto.SymmetricKeySize);
-
+            System.Diagnostics.Debug.Print($"SS encryption key: {key}\n");
+            
             // send symmetric key to user
             _deliveryGateway.SendSharedSecretKey(user, key);
 
